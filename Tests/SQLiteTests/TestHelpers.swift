@@ -112,8 +112,8 @@ class TestCodable: Codable {
     let bool: Bool
     let float: Float
     let double: Double
-    let date: Date
     let optional: String?
+    let date: Date
     let sub: TestCodable?
 
     init(int: Int, string: String, bool: Bool, float: Float, double: Double, date: Date, optional: String?, sub: TestCodable?) {

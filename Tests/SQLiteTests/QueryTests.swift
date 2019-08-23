@@ -252,20 +252,20 @@ class QueryTests : XCTestCase {
         let value = TestCodable(int: 1, string: "2", bool: true, float: 3, double: 4, date: Date(timeIntervalSince1970: 0), optional: nil, sub: nil)
         let insert = try emails.insert(value)
         AssertSQL(
-            "INSERT INTO \"emails\" (\"int\", \"string\", \"bool\", \"float\", \"double\", \"date\") VALUES (1, '2', 1, 3.0, 4.0, '1970-01-01T00:00:00.000')",
+            "INSERT INTO \"emails\" (\"int\", \"string\", \"bool\", \"float\", \"double\", \"date\") VALUES (1, '2', 1, 3.0, 4.0,'1970-01-01T00:00:00.000')",
             insert
         )
     }
 
     func test_insert_encodable_with_nested_encodable() throws {
         let emails = Table("emails")
-        let value1 = TestCodable(int: 1, string: "2", bool: true, float: 3, double: 4, date: Date(timeIntervalSince1970: 0), optional: nil, sub: nil)
-        let value = TestCodable(int: 1, string: "2", bool: true, float: 3, double: 4, date: Date(timeIntervalSince1970: 0), optional: "optional", sub: value1)
+        let value1 = TestCodable(int: 1, string: "2", bool: true, float: 3, double: 4, date: Date(timeIntervalSince1970: 0,optional: nil, sub: nil)
+        let value = TestCodable(int: 1, string: "2", bool: true, float: 3, double: 4, date: Date(timeIntervalSince1970: 0,optional: "optional", sub: value1)
         let insert = try emails.insert(value)
         let encodedJSON = try JSONEncoder().encode(value1)
         let encodedJSONString = String(data: encodedJSON, encoding: .utf8)!
         AssertSQL(
-            "INSERT INTO \"emails\" (\"int\", \"string\", \"bool\", \"float\", \"double\", \"date\", \"optional\", \"sub\") VALUES (1, '2', 1, 3.0, 4.0, '1970-01-01T00:00:00.000', 'optional', '\(encodedJSONString)')",
+            "INSERT INTO \"emails\" (\"int\", \"string\", \"bool\", \"float\", \"double\", \"date\", \"optional\", \"sub\") VALUES (1, '2', 1, 3.0, 4.0,'1970-01-01T00:00:00.000', 'optional', '\(encodedJSONString)')",
             insert
         )
     }
@@ -436,9 +436,9 @@ class QueryIntegrationTests : SQLiteTestCase {
             builder.column(Expression<Int>("int"))
             builder.column(Expression<String>("string"))
             builder.column(Expression<Bool>("bool"))
+            builder.column(Expression<Date>("date"))
             builder.column(Expression<Double>("float"))
             builder.column(Expression<Double>("double"))
-            builder.column(Expression<Date>("date"))
             builder.column(Expression<String?>("optional"))
             builder.column(Expression<Data>("sub"))
         })
@@ -454,9 +454,9 @@ class QueryIntegrationTests : SQLiteTestCase {
         XCTAssertEqual(values[0].int, 5)
         XCTAssertEqual(values[0].string, "6")
         XCTAssertEqual(values[0].bool, true)
+        XCTAssertEqual(values[0].date, Date(timeIntervalSince1970: 5000))
         XCTAssertEqual(values[0].float, 7)
         XCTAssertEqual(values[0].double, 8)
-        XCTAssertEqual(values[0].date, Date(timeIntervalSince1970: 5000))
         XCTAssertEqual(values[0].optional, "optional")
         XCTAssertEqual(values[0].sub?.int, 1)
         XCTAssertEqual(values[0].sub?.string, "2")
