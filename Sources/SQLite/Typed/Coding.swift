@@ -133,10 +133,11 @@ fileprivate class SQLiteEncoder: Encoder {
                 self.encoder.setters.append(Expression(key.stringValue) <- data)
             }
             else if let date = value as? Date {
-                self.encoder.setters.append(Expression(key.stringValue) <- date.datatypeValue)
+                 self.encoder.setters.append(Expression(key.stringValue) <- date.datatypeValue)
             }
             else {
-                let encoded = try JSONEncoder().encode(value)
+                let encoder = JSONEncoder()
+                let encoded = try encoder.encode(value)
                 let string = String(data: encoded, encoding: .utf8)
                 self.encoder.setters.append(Expression(key.stringValue) <- string)
             }
@@ -294,8 +295,8 @@ fileprivate class SQLiteDecoder : Decoder {
                 return data as! T
             }
             else if type == Date.self {
-                let date = try self.row.get(Expression<Date>(key.stringValue))
-                return date as! T
+                 let date = try self.row.get(Expression<Date>(key.stringValue))
+                 return date as! T
             }
             guard let JSONString = try self.row.get(Expression<String?>(key.stringValue)) else {
                 throw DecodingError.typeMismatch(type, DecodingError.Context(codingPath: self.codingPath, debugDescription: "an unsupported type was found"))
